@@ -66,6 +66,10 @@ public class Main extends JavaPlugin {
     }
 
     private void setupVault() {
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            return;
+        }
+
         getLogger().log(Level.SEVERE, "Vault not enabled, shutting down.");
         this.getServer().getPluginManager().disablePlugin(this);
     }
