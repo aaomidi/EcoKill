@@ -32,8 +32,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         setupVault();
-        setupEconomy();
-        setupChat();
+
         getLogger().info(String.format("[%s] - Plugin enabled. Vault dependency found.", getDescription().getName()));
         getServer().getPluginManager().registerEvents(new Events(this), this);
         this.getCommand("ecoreload").setExecutor(new Commands(this));
@@ -67,6 +66,8 @@ public class Main extends JavaPlugin {
 
     private void setupVault() {
         if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            setupEconomy();
+            setupChat();
             return;
         }
 
