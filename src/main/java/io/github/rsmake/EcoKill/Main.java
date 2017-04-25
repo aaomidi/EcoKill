@@ -4,10 +4,10 @@ import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
 
@@ -31,12 +31,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!setupEconomy()) {
-            getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        setupPermissions();
+        setupVault();
+        setupEconomy();
         setupChat();
         getLogger().info(String.format("[%s] - Plugin enabled. Vault dependency found.", getDescription().getName()));
         getServer().getPluginManager().registerEvents(new Events(this), this);
@@ -69,27 +65,26 @@ public class Main extends JavaPlugin {
         env = getConfig().getBoolean("Env.Enabled");
     }
 
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
+    private void setupVault() {
+        getLogger().log(Level.SEVERE, "Vault not enabled, shutting down.");
+        this.getServer().getPluginManager().disablePlugin(this);
+    }
+
+    private void setupEconomy() {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
+        if (rsp == null)
+            return;
+
         econ = rsp.getProvider();
-        return econ != null;
     }
 
-    private boolean setupChat() {
+    private void setupChat() {
         RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager().getRegistration(Chat.class);
+        if (rsp == null)
+            return;
+
         chat = rsp.getProvider();
-        return chat != null;
     }
 
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        return perms != null;
-    }
+
 }
